@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bài 2 · Tìm kiếm thông tin học thuật</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ===== Reset ===== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body, h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+    ul, ol { padding: 0; list-style: none; }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    /* ===== Tokens ===== */
+    :root {
+      --bg:        #ffffff;
+      --surface:   #ffffff;
+      --text:      #1a1a1a;
+      --muted:     #6b7280;
+      --border:    #e5e7eb;
+      --accent:    #4a6b57;
+      --accent-2:  #3d5a48;
+      --tint:      #eaf0ec;
+      --radius:    14px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.06);
+      --ease:      cubic-bezier(0.2, 0.7, 0.2, 1);
+      --container: 1080px;
+      --gutter:    clamp(1rem, 4vw, 2.5rem);
+    }
+
+    /* ===== Base ===== */
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: #ffffff;
+      margin: 0;
+      padding: 0.5rem 0;
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; letter-spacing: -0.01em; color: var(--text); }
+    p { color: #2a2a2a; }
+
+    /* ===== Layout utilities ===== */
+    .container {
+      width: 100%;
+      max-width: var(--container);
+      margin-inline: auto;
+      padding-inline: var(--gutter);
+    }
+    .eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .section-head {
+      max-width: 720px;
+      margin-bottom: clamp(1.5rem, 4vw, 2.25rem);
+    }
+    .section-head h2 {
+      font-size: clamp(1.65rem, 3.2vw, 2.25rem);
+      margin-bottom: 0.75rem;
+    }
+    .section-head p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 60ch;
+    }
+
+    /* ===== Prose + code ===== */
+    .prose p + p { margin-top: 1rem; }
+    .prose ul {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .prose li {
+      padding-left: 1.5rem;
+      position: relative;
+      color: var(--muted);
+    }
+    .prose li::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0.7em;
+      width: 8px; height: 1px;
+      background: var(--accent);
+    }
+    .prose code {
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.88em;
+      background: var(--tint);
+      color: var(--accent-2);
+      padding: 0.08em 0.4em;
+      border-radius: 4px;
+    }
+
+    /* ===== Table ===== */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+      margin-top: 2rem;
+    }
+    table {
+      width: 100%;
+      min-width: 640px;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+    thead th {
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      background: #f6f7f6;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    tbody td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: #2a2a2a;
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: var(--tint); }
+    .pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      background: var(--tint);
+      color: var(--accent);
+    }
+    .pill.low    { background: #fdecec; color: #9a3a3a; }
+    .pill.medium { background: #fdf5e6; color: #8a6418; }
+    .pill.high   { background: var(--tint); color: var(--accent); }
+
+    /* ===== Reveal ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+    }
+    .reveal.in-view { opacity: 1; transform: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="reveal">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Bài 2</span>
+        <h2>Tìm kiếm và đánh giá thông tin học thuật</h2>
+        <p>Sử dụng toán tử tìm kiếm nâng cao và đánh giá nguồn tin theo các tiêu chí khách quan.</p>
+      </div>
+
+      <div class="prose">
+        <p>
+          Để thu thập tài liệu chất lượng về phương pháp giải số cho phương trình Navier-Stokes, tôi đã áp dụng chiến lược tìm kiếm chéo trên các cơ sở dữ liệu học thuật như Google Scholar, ScienceDirect, và IEEE Xplore. Việc kết hợp các từ khóa chuyên sâu cùng các toán tử tìm kiếm nâng cao đã giúp thu hẹp phạm vi và định vị chính xác nguồn học thuật:
+        </p>
+        <ul>
+          <li><code>"Navier-Stokes equations numerical solutions"</code> — Tìm chính xác cụm từ để tiếp cận thẳng các bài báo về giải pháp số.</li>
+          <li><code>"Computational Fluid Dynamics (CFD)"</code> — Toán tử ngoặc kép giúp lọc các tài liệu chuẩn xác về lĩnh vực Động lực học chất lưu số.</li>
+          <li><code>site:edu</code> hoặc <code>site:org</code> — Giới hạn phạm vi tìm kiếm trong các tên miền của tổ chức giáo dục và viện toán học uy tín.</li>
+          <li><code>"NASA Technical Reports Server"</code> — Mở rộng tìm kiếm các báo cáo kỹ thuật có tính ứng dụng thực tiễn cao trong ngành hàng không vũ trụ.</li>
+        </ul>
+      </div>
+
+      <div class="table-wrap" role="region" aria-label="Bảng đánh giá nguồn thông tin">
+        <table>
+          <thead>
+            <tr>
+              <th>Nguồn tin</th>
+              <th>Tác giả</th>
+              <th>Độ tin cậy</th>
+              <th>Đánh giá</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>An Introduction to Fluid Dynamics. (Batchelor, G.K., 2000)</td>
+              <td>G.K. Batchelor / NXB Cambridge University Press</td>
+              <td><span class="pill high">Cao</span></td>
+              <td>Hệ thống lý thuyết nền tảng hoàn hảo, lượt trích dẫn khổng lồ (&gt;30,000). Tính cập nhật thấp nhưng là lý thuyết gốc.</td>
+            </tr>
+            <tr>
+              <td>Deep learning for universal linear embeddings of nonlinear dynamics. (Lusch et al., 2018)</td>
+              <td>Nhóm nghiên cứu ĐH Washington / NXB Nature</td>
+              <td><span class="pill high">Cao</span></td>
+              <td>Tạp chí top đầu. Tính cập nhật rất tốt (Deep Learning giải hệ phi tuyến), trích dẫn cao.</td>
+            </tr>
+            <tr>
+              <td>Navier-Stokes Equation. (Clay Mathematics Institute, 2023)</td>
+              <td>Viện Toán học Clay (Mỹ)</td>
+              <td><span class="pill medium">Trung bình</span></td>
+              <td>Cung cấp định nghĩa chuẩn mực nhưng mang tính giới thiệu, không có quá trình phản biện kín (peer-review) như bài báo học thuật.</td>
+            </tr>
+            <tr>
+              <td>OpenFOAM User Guide: Incompressible Navier-Stokes Solvers.</td>
+              <td>Tổ chức OpenCFD Ltd.</td>
+              <td><span class="pill low">Thấp</span></td>
+              <td>Tài liệu hướng dẫn phần mềm mã nguồn mở. Có tính thực hành tốt nhưng không dùng để tham khảo chứng minh toán học.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in-view'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+</body>
+</html>
